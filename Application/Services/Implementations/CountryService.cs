@@ -41,7 +41,7 @@ namespace Application.Services
             ContactMapper = ContactMapperFactory.Create();
         }
 
-        public CountryDto Create(CountryDto element)
+        public Task<CountryDto> Create(CountryDto element)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace Application.Services
                     throw new ElementCannotBeAddedException();
                 
                 CountryDto elementAdded = CountryMapper.EntityToDto(newEntity);
-                return elementAdded;
+                return Task.FromResult(elementAdded);
             }
             catch(Exception ex)
             {
@@ -62,14 +62,14 @@ namespace Application.Services
             }
         }
 
-        public bool Delete(int id)
+        public Task<bool> Delete(int id)
         {
             try
             {
                 Country country = CountryFactory.Create();
                 country.Id = id;
                 Repository.Remove(country);
-                return true;
+                return Task.FromResult(true);
             }
             catch(Exception ex)
             {
@@ -78,7 +78,7 @@ namespace Application.Services
             }
         }
 
-        public CountryDto Get(int id)
+        public Task<CountryDto> Get(int id)
         {
             Country entity = Repository.GetById(id);
             if (entity == null)
@@ -86,16 +86,16 @@ namespace Application.Services
 
             CountryDto element = CountryMapper.EntityToDto(entity);
 
-            return element;
+            return Task.FromResult(element);
         }
 
-        public IEnumerable<CountryDto> GetAll()
+        public Task<IEnumerable<CountryDto>> GetAll()
         {
             IEnumerable<CountryDto> countries = CountryMapper.EntitiesToDto(Repository.GetAll());
-            return countries;
+            return Task.FromResult(countries);
         }
 
-        public CountryDto Update(int id, CountryDto element)
+        public Task<CountryDto> Update(int id, CountryDto element)
         {
             CountryDto created = null;
 
@@ -103,7 +103,7 @@ namespace Application.Services
             {
                 element.Id = id;
                 Repository.Save(CountryMapper.DtoToEntity(element));
-                return created;
+                return Task.FromResult(created);
             }
             catch(Exception ex)
             {

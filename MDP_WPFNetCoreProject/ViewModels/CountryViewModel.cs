@@ -33,7 +33,7 @@ namespace MDP_WPFNetCoreProject.ViewModels
             {
                 if (_countryList == null)
                 {
-                    _countryList = Service.GetAll().OrderBy(c => c.Id).ToList();
+                    _countryList = Service.GetAll().Result.OrderBy(c => c.Id).ToList();
                 }
 
                 return _countryList;
@@ -134,8 +134,8 @@ namespace MDP_WPFNetCoreProject.ViewModels
         private void InitializeCommands()
         {
             CreateCountry = new RelayCommand(o => CreateCountryClick(null));
-            DeleteCountry = new RelayCommand(o => DeleteCountryClick(null));
-            SaveCountry = new RelayCommand(o => SaveCountryClick(null));
+            DeleteCountry = new RelayCommand(async o => await DeleteCountryClickThread());
+            SaveCountry = new RelayCommand(async o => await SaveCountryClickThreadAsync());
             CreateDataExample = new RelayCommand(o => CreateDataExampleClick(null));
         }
 
@@ -166,17 +166,11 @@ namespace MDP_WPFNetCoreProject.ViewModels
 
         #region Delete Country
 
-        private void DeleteCountryClick(object sender)
-        {
-            System.Threading.Thread thread1 = new System.Threading.Thread(DeleteCountryClickThread);
-            thread1.Start();
-        }
-
-        private void DeleteCountryClickThread()
+        private async Task DeleteCountryClickThread()
         {
             try
             {
-                _service.Delete(_selectedCountry.Id);
+                await _service.Delete(_selectedCountry.Id);
                 SelectedCountry = null;
 
                 UpdateList();
@@ -185,30 +179,23 @@ namespace MDP_WPFNetCoreProject.ViewModels
             {
                 MessageBox_Show(null, ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
-
         }
 
         #endregion Delete Country
 
         #region Save Country
 
-        private void SaveCountryClick(object sender)
-        {
-            System.Threading.Thread thread1 = new System.Threading.Thread(SaveCountryClickThread);
-            thread1.Start();
-        }
-
-        private void SaveCountryClickThread()
+        private async Task SaveCountryClickThreadAsync()
         {
             try
             {
                 if (SelectedCountry.Id != 0)
                 {
-                    SelectedCountry = _service.Update(SelectedCountry.Id, SelectedCountry);
+                    SelectedCountry = await _service.Update(SelectedCountry.Id, SelectedCountry);
                 }
                 else
                 {
-                    SelectedCountry = Service.Create(SelectedCountry);
+                    SelectedCountry = await Service.Create(SelectedCountry);
                 }
 
                 UpdateSelectedCountry();

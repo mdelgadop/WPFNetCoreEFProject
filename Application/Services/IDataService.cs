@@ -7,10 +7,10 @@ namespace Application.Services
     public interface IDataService<T>
         where T : GenericDto
     {
-        IEnumerable<T> GetAll();
-        T Get(int id);
-        T Create(T element);
-        T Update(int id, T element);
-        bool Delete(int id);
+        Task<IEnumerable<T>> GetAll();
+        Task<T> Get(int id);
+        Task<T> Create(T element);
+        Task<T> Update(int id, T element);
+        Task<bool> Delete(int id);
     }
 }
